@@ -16,10 +16,6 @@ import geopandas as gpd
 import geopy as gpy
 import numpy as np
 
-```
-
-
-```python
 # Setup locale info
 _ = locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
@@ -42,44 +38,7 @@ cm.register_cmap(name='umich',
                        
                        'alpha': [(0.,1,1),
                                  (1.,1,1)],})
-```
-
-For posterity's sake I've left the cell below in, which shows how I did the geocoding for each city. It is now a Markdown cell with Python markup, and the pre-processed data should be loaded as in the cell below it.
-
-```python
-from time import sleep
-with open("How_Cities_Work_Data.csv", "r") as data_file:
-    student_df = pd.read_csv(data_file)
-
-city_geocodes_df = None
-cities_gotten = set()
-for idx, data in student_df.iterrows():
-    city_str = f"{data['City']} {data['State']+' ' if str(data['State']) != 'nan' else ''}{data['Country']}"
-    if city_str in cities_gotten:
-        continue
-    print(city_str)
-    
-    try:
-        city_geocode = gpd.tools.geocode(city_str, provider='openmapquest', api_key="{KEY}")
-    except:
-        sleep(1)
-        city_geocode = gpd.tools.geocode(city_str, provider='openmapquest', api_key="{KEY}")
-    city_geocode['City'] = data['City']
-    city_geocode['State'] = data['State']
-    city_geocode['Country'] = data['Country']
-    sleep(1)
-    cities_gotten.add(city_str)
-    
-    if city_geocodes_df is None:
-        city_geocodes_df = city_geocode
-    else:
-        city_geocodes_df = city_geocodes_df.append(city_geocode, ignore_index=True)
-student_df = city_geocodes_df.merge(student_df, how='right')
-student_df.to_file('cities.shp')
-```
-
-
-```python
+                                 
 # Load student city data with accompanying geocodes
 student_df = gpd.read_file('cities.shp')
 
